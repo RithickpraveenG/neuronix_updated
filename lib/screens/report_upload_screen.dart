@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
+
 import '../widgets/neuronix_button.dart';
 import '../widgets/neuronix_card.dart';
 import '../widgets/responsive_scaffold.dart';
@@ -16,6 +18,7 @@ class _ReportUploadScreenState extends State<ReportUploadScreen> {
     text:
         'Patient presents with blood pressure 140/90 mmHg, elevated WBC count of 12,500 cells/mcL, mild fever 101.2 F, dry cough, and acute fatigue over 3 days.',
   );
+  final ImagePicker _picker = ImagePicker();
 
   String? _selectedFileName;
   int? _selectedFileSize;
@@ -32,6 +35,27 @@ class _ReportUploadScreenState extends State<ReportUploadScreen> {
       _selectedFileName = filename;
       _selectedFileSize = sizeBytes;
     });
+  }
+
+  Future<void> _pickReportFile() async {
+    try {
+      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile == null) {
+        return;
+      }
+
+      final sizeBytes = await pickedFile.length();
+      final fileName = pickedFile.name.split('/').last.split('\\').last;
+      setState(() {
+        _selectedFileName = fileName;
+        _selectedFileSize = sizeBytes;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Unable to pick a report: $e')),
+      );
+    }
   }
 
   Future<void> _analyzeReport() async {
@@ -82,7 +106,7 @@ class _ReportUploadScreenState extends State<ReportUploadScreen> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1E88E5).withOpacity(0.08),
+                          color: const Color(0xFF1E88E5).withValues(alpha: 0.08),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(Icons.cloud_upload_outlined, size: 48, color: Color(0xFF1E88E5)),
@@ -101,6 +125,12 @@ class _ReportUploadScreenState extends State<ReportUploadScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          OutlinedButton.icon(
+                            onPressed: _pickReportFile,
+                            icon: const Icon(Icons.attach_file, color: Color(0xFF1E88E5)),
+                            label: const Text('Choose File'),
+                          ),
+                          const SizedBox(width: 12),
                           OutlinedButton.icon(
                             onPressed: () => _simulateFileSelect('blood_panel_lab_results.pdf', 1024 * 450),
                             icon: const Icon(Icons.picture_as_pdf, color: Colors.red),
