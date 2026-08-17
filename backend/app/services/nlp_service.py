@@ -2,15 +2,21 @@
 
 import logging
 from typing import Any, Dict, List
-import spacy
 
 logger = logging.getLogger(__name__)
 
 # Initialize spaCy pipeline with graceful fallback
 try:
-    nlp = spacy.load("en_core_web_sm")
-except Exception:
-    nlp = spacy.blank("en")
+    import spacy
+    try:
+        nlp = spacy.load("en_core_web_sm")
+    except Exception:
+        nlp = spacy.blank("en")
+        if hasattr(nlp, 'add_pipe'):
+            nlp.add_pipe('sentencizer')
+except ImportError:
+    spacy = None
+    nlp = None
 
 # Clinical terms dictionary for medical NER enrichment
 SYMPTOM_DICTIONARY = {
@@ -56,7 +62,7 @@ def extract_symptoms_and_keywords(text: str) -> Dict[str, Any]:
             'entities': []
         }
 
-    doc = nlp(text)
+    doc = nlp(text) if nlp else None
     normalized_text = text.lower()
 
     # Rule & dictionary matched entities
@@ -68,18 +74,22 @@ def extract_symptoms_and_keywords(text: str) -> Dict[str, Any]:
 
     # spaCy Named Entities
     spacy_entities = []
-    for ent in doc.ents:
-        spacy_entities.append({
-            'text': ent.text,
-            'label': ent.label_
-        })
+    if doc and hasattr(doc, 'ents'):
+        for ent in doc.ents:
+            spacy_entities.append({
+                'text': ent.text,
+                'label': ent.label_
+            })
 
     # Extracted keywords (nouns, proper nouns, adjectives)
-    keywords = list({
-        token.text.lower()
-        for token in doc
-        if not token.is_stop and token.is_alpha and len(token.text) > 3
-    })
+    if doc:
+        keywords = list({
+            token.text.lower()
+            for token in doc
+            if not getattr(token, 'is_stop', False) and getattr(token, 'is_alpha', True) and len(token.text) > 3
+        })
+    else:
+        keywords = [w for w in normalized_text.split() if len(w) > 3]
 
     return {
         'symptoms': symptoms,
@@ -97,8 +107,13 @@ def summarize_medical_report(text: str, max_sentences: int = 3) -> str:
     if not text or not text.strip():
         return 'No report content available to summarize.'
 
-    doc = nlp(text)
-    sentences = [sent.text.strip() for sent in doc.sents if len(sent.text.strip()) > 10]
+    doc = nlp(text) if nlp else None
+    sentences = []
+    if doc and hasattr(doc, 'sents'):
+        try:
+            sentences = [sent.text.strip() for sent in doc.sents if len(sent.text.strip()) > 10]
+        except Exception:
+            sentences = []
 
     if not sentences:
         sentences = [s.strip() for s in text.split('.') if len(s.strip()) > 10]

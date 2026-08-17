@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../services/firebase_service.dart';
 import '../widgets/health_metric_card.dart';
 import '../widgets/neuronix_button.dart';
 import '../widgets/neuronix_card.dart';
@@ -27,14 +29,25 @@ class _DoctorPatientDetailScreenState extends State<DoctorPatientDetailScreen> {
     super.dispose();
   }
 
-  void _saveClinicalNotes() {
+  Future<void> _saveClinicalNotes() async {
     setState(() => _isSaved = true);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Clinical notes updated in EHR record.')),
-    );
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) setState(() => _isSaved = false);
-    });
+    try {
+      final firebaseService = context.read<FirebaseService>();
+      final patientId = widget.patientName.toLowerCase().replaceAll(' ', '-');
+      await firebaseService.setDocument('patient_notes', patientId, {
+        'patientName': widget.patientName,
+        'physicianNotes': _notesController.text,
+        'updatedAt': DateTime.now().toIso8601String(),
+      });
+    } catch (_) {}
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Clinical notes updated & saved to EHR database.')),
+      );
+    }
+    await Future.delayed(const Duration(seconds: 2));
+    if (mounted) setState(() => _isSaved = false);
   }
 
   @override

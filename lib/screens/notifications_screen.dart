@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 import '../widgets/empty_state_widget.dart';
 import '../widgets/neuronix_card.dart';
 import '../widgets/responsive_scaffold.dart';
@@ -11,7 +12,8 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  final List<Map<String, dynamic>> _notifications = [
+  final ApiService _apiService = ApiService();
+  List<Map<String, dynamic>> _notifications = [
     {
       'id': 'n1',
       'title': 'Medical Report Analysis Complete',
@@ -37,6 +39,23 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       'read': true,
     },
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchNotifications();
+  }
+
+  Future<void> _fetchNotifications() async {
+    try {
+      final res = await _apiService.getNotifications();
+      if (mounted && res.isNotEmpty) {
+        setState(() {
+          _notifications = res.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+        });
+      }
+    } catch (_) {}
+  }
 
   void _markAllRead() {
     setState(() {

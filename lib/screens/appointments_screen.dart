@@ -121,14 +121,22 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
     );
   }
 
-  void _updateStatus(String id, String newStatus) {
+  Future<void> _updateStatus(String id, String newStatus) async {
+    Map<String, dynamic>? updatedTarget;
     setState(() {
       for (var appt in _appointments) {
-        if (appt['id'] == id) {
+        if (appt['id']?.toString() == id) {
           appt['status'] = newStatus;
+          updatedTarget = Map<String, dynamic>.from(appt);
         }
       }
     });
+
+    if (updatedTarget != null) {
+      try {
+        await _apiService.createAppointment(updatedTarget!);
+      } catch (_) {}
+    }
   }
 
   @override
