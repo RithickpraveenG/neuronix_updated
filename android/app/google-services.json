@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "405131433882",
+    "project_id": "neuronix-s105",
+    "storage_bucket": "neuronix-s105.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:405131433882:android:70fae7ec99bd9ee3304c23",
+        "android_client_info": {
+          "package_name": "com.example.ai_health_care_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1n-RtgyPQYSF5951EFPymAUEnhX4bxQk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
