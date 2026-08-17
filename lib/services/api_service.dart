@@ -1,16 +1,11 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+
+import 'api_config.dart';
 
 /// Production API client connecting Flutter UI screens to the FastAPI backend micro-services.
 class ApiService {
-  String get _baseUrl {
-    if (kIsWeb) {
-      final host = Uri.base.host.isNotEmpty ? Uri.base.host : '127.0.0.1';
-      return 'http://$host:8000';
-    }
-    return 'http://127.0.0.1:8000';
-  }
+  String get _baseUrl => ApiConfig.backendBaseUrl;
 
   Future<Map<String, dynamic>> signIn(String email, String password) async {
     final response = await http.post(
