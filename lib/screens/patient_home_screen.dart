@@ -24,33 +24,77 @@ class PatientHomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Welcome Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isCompact = constraints.maxWidth < 640;
+
+                if (isCompact) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Good morning, $name',
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF0F172A),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          CircleAvatar(
+                            radius: 22,
+                            backgroundColor: const Color(0xFF1E88E5).withOpacity(0.1),
+                            child: const Icon(Icons.person, color: Color(0xFF1E88E5), size: 24),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        "Here's your personal AI health overview & care plan.",
+                        style: TextStyle(fontSize: 14, color: Color(0xFF64748B)),
+                      ),
+                    ],
+                  );
+                }
+
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      'Good morning, $name',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF0F172A),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Good morning, $name',
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF0F172A),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          const Text(
+                            "Here's your personal AI health overview & care plan.",
+                            style: TextStyle(fontSize: 14, color: Color(0xFF64748B)),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      "Here's your personal AI health overview & care plan.",
-                      style: TextStyle(fontSize: 14, color: Color(0xFF64748B)),
+                    CircleAvatar(
+                      radius: 24,
+                      backgroundColor: const Color(0xFF1E88E5).withOpacity(0.1),
+                      child: const Icon(Icons.person, color: Color(0xFF1E88E5), size: 28),
                     ),
                   ],
-                ),
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor: const Color(0xFF1E88E5).withOpacity(0.1),
-                  child: const Icon(Icons.person, color: Color(0xFF1E88E5), size: 28),
-                ),
-              ],
+                );
+              },
             ),
             const SizedBox(height: 20),
 
@@ -74,46 +118,60 @@ class PatientHomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            GridView.count(
-              crossAxisCount: MediaQuery.of(context).size.width >= 700 ? 4 : 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                _buildActionCard(
-                  context,
-                  title: 'Symptom Checker',
-                  subtitle: 'AI Risk Evaluation',
-                  icon: Icons.healing,
-                  color: const Color(0xFF1E88E5),
-                  onTap: () => context.push('/symptom-checker'),
-                ),
-                _buildActionCard(
-                  context,
-                  title: 'Upload Report',
-                  subtitle: 'OCR & NLP Processing',
-                  icon: Icons.document_scanner,
-                  color: const Color(0xFF00B4D8),
-                  onTap: () => context.push('/report-upload'),
-                ),
-                _buildActionCard(
-                  context,
-                  title: 'Health Vitals',
-                  subtitle: 'Track Vitals & Trends',
-                  icon: Icons.favorite,
-                  color: const Color(0xFF10B981),
-                  onTap: () => context.push('/health-dashboard'),
-                ),
-                _buildActionCard(
-                  context,
-                  title: 'Appointments',
-                  subtitle: 'Schedule Consultation',
-                  icon: Icons.calendar_today,
-                  color: const Color(0xFF8B5CF6),
-                  onTap: () => context.push('/appointments'),
-                ),
-              ],
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final itemWidth = constraints.maxWidth;
+                final columns = itemWidth >= 1100
+                    ? 4
+                    : itemWidth >= 760
+                        ? 3
+                        : itemWidth >= 500
+                            ? 2
+                            : 1;
+
+                return GridView.count(
+                  crossAxisCount: columns,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  childAspectRatio: 1.5,
+                  children: [
+                    _buildActionCard(
+                      context,
+                      title: 'Symptom Checker',
+                      subtitle: 'AI Risk Evaluation',
+                      icon: Icons.healing,
+                      color: const Color(0xFF1E88E5),
+                      onTap: () => context.push('/symptom-checker'),
+                    ),
+                    _buildActionCard(
+                      context,
+                      title: 'Upload Report',
+                      subtitle: 'OCR & NLP Processing',
+                      icon: Icons.document_scanner,
+                      color: const Color(0xFF00B4D8),
+                      onTap: () => context.push('/report-upload'),
+                    ),
+                    _buildActionCard(
+                      context,
+                      title: 'Health Vitals',
+                      subtitle: 'Track Vitals & Trends',
+                      icon: Icons.favorite,
+                      color: const Color(0xFF10B981),
+                      onTap: () => context.push('/health-dashboard'),
+                    ),
+                    _buildActionCard(
+                      context,
+                      title: 'Appointments',
+                      subtitle: 'Schedule Consultation',
+                      icon: Icons.calendar_today,
+                      color: const Color(0xFF8B5CF6),
+                      onTap: () => context.push('/appointments'),
+                    ),
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 28),
 

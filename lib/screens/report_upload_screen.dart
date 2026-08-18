@@ -98,52 +98,86 @@ class _ReportUploadScreenState extends State<ReportUploadScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Upload Card / Dropzone
+                // Upload Card / Dropzone (responsive)
                 NeuronixCard(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(18),
                   child: Column(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1E88E5).withValues(alpha: 0.08),
+                          color: const Color(0xFF1E88E5).withOpacity(0.08),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.cloud_upload_outlined, size: 48, color: Color(0xFF1E88E5)),
+                        child: const Icon(Icons.cloud_upload_outlined, size: 44, color: Color(0xFF1E88E5)),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 14),
                       const Text(
                         'Upload Medical Report File',
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
                       const Text(
                         'Supports PDF, PNG, JPG files up to 15MB',
                         style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
                       ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          OutlinedButton.icon(
-                            onPressed: _pickReportFile,
-                            icon: const Icon(Icons.attach_file, color: Color(0xFF1E88E5)),
-                            label: const Text('Choose File'),
-                          ),
-                          const SizedBox(width: 12),
-                          OutlinedButton.icon(
-                            onPressed: () => _simulateFileSelect('blood_panel_lab_results.pdf', 1024 * 450),
-                            icon: const Icon(Icons.picture_as_pdf, color: Colors.red),
-                            label: const Text('Sample PDF'),
-                          ),
-                          const SizedBox(width: 12),
-                          OutlinedButton.icon(
-                            onPressed: () => _simulateFileSelect('chest_xray_report.png', 1024 * 820),
-                            icon: const Icon(Icons.image, color: Colors.blue),
-                            label: const Text('Sample Image'),
-                          ),
-                        ],
-                      ),
+                      const SizedBox(height: 14),
+                      LayoutBuilder(builder: (context, constraints) {
+                        final isNarrow = constraints.maxWidth < 420;
+                        if (isNarrow) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              OutlinedButton.icon(
+                                onPressed: _pickReportFile,
+                                icon: const Icon(Icons.attach_file, color: Color(0xFF1E88E5)),
+                                label: const Text('Choose File'),
+                              ),
+                              const SizedBox(height: 8),
+                              OutlinedButton.icon(
+                                onPressed: () => _simulateFileSelect('blood_panel_lab_results.pdf', 1024 * 450),
+                                icon: const Icon(Icons.picture_as_pdf, color: Colors.red),
+                                label: const Text('Sample PDF'),
+                              ),
+                              const SizedBox(height: 8),
+                              OutlinedButton.icon(
+                                onPressed: () => _simulateFileSelect('chest_xray_report.png', 1024 * 820),
+                                icon: const Icon(Icons.image, color: Colors.blue),
+                                label: const Text('Sample Image'),
+                              ),
+                            ],
+                          );
+                        }
+
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: _pickReportFile,
+                                icon: const Icon(Icons.attach_file, color: Color(0xFF1E88E5)),
+                                label: const Text('Choose File'),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: () => _simulateFileSelect('blood_panel_lab_results.pdf', 1024 * 450),
+                                icon: const Icon(Icons.picture_as_pdf, color: Colors.red),
+                                label: const Text('Sample PDF'),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: () => _simulateFileSelect('chest_xray_report.png', 1024 * 820),
+                                icon: const Icon(Icons.image, color: Colors.blue),
+                                label: const Text('Sample Image'),
+                              ),
+                            ),
+                          ],
+                        );
+                      }),
                     ],
                   ),
                 ),
